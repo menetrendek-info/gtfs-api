@@ -23,7 +23,7 @@ const main = async () => {
                 "name": "MÁV-START Zrt."
             }
         ],
-        "sqlitePath": "./db.sqlite"
+        "sqlitePath": "./data/db.sqlite"
     };
 
     await updateGtfsRealtime(config)
