@@ -32,6 +32,7 @@ const main = async () => {
         db = openDb(config)
     }catch(e){
         await importGtfs(config)
+        await updateGtfsRealtime(config)
         db = openDb(config)
     }
 
