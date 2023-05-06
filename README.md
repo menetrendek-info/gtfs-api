@@ -1,5 +1,5 @@
 # Menetrendek.info GTFS API
-
+[![Build Docker Image](https://github.com/menetrendek-info/gtfs-api/actions/workflows/ci.yml/badge.svg)](https://github.com/menetrendek-info/gtfs-api/actions/workflows/ci.yml)
 ## 🇭🇺 Egy GTFS API a magyar tömegközlekedésre
 
 ### Az API állapota
