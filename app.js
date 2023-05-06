@@ -63,6 +63,8 @@ const main = async () => {
             t.trip_headsign, 
             r.route_long_name, 
             r.route_short_name,
+            r.route_color,
+            r.route_text_color,
             r.route_id, 
             t.trip_id, 
             s1.stop_name AS departure_stop,
