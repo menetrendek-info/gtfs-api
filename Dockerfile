@@ -23,7 +23,5 @@ RUN yarn install
 # Copy the rest of the application code to the container
 COPY . .
 
-HEALTHCHECK CMD curl -I --fail http://localhost:8081 || exit 1   
-
 # Start the app when the container launches
 CMD ["npm", "start"]
