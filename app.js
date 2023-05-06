@@ -68,6 +68,8 @@ const main = async () => {
             s2.stop_name AS arrival_stop,
             MIN(st1.departure_time) AS start_departure, 
             MAX(st2.arrival_time) AS end_arrival, 
+            strftime('%H:%M', st1.departure_time, 'localtime') AS start_departure, 
+            strftime('%H:%M', st2.arrival_time, 'localtime') AS end_arrival, 
             ROUND((6371 * ACOS(COS(RADIANS(s1.stop_lat)) * COS(RADIANS(s2.stop_lat)) * COS(RADIANS(s2.stop_lon) - RADIANS(s1.stop_lon)) + SIN(RADIANS(s1.stop_lat)) * SIN(RADIANS(s2.stop_lat)))), 2) AS distance, 
             strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time))) AS travel_time 
         FROM 
@@ -84,8 +86,7 @@ const main = async () => {
             AND st1.stop_sequence < st2.stop_sequence 
             AND c.${req.params.day} = 1 
         GROUP BY 
-            r.route_id, 
-            t.trip_id 
+            r.route_id
         ORDER BY 
             start_departure;
     `).all({ start_stop_id: req.params.start_stop_id, end_stop_id: req.params.end_stop_id });
