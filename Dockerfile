@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:current-alpine3.17
+FROM node:16.15.1-alpine3.16
 
 # Expose the port that the app listens on
 EXPOSE 8081
