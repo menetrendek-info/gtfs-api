@@ -37,7 +37,8 @@ const main = async () => {
     }
 
     app.get('/', function (req, res) {
-        res.json({ body: req.body, query: req.query, params: req.params });
+        //redirect with header
+        res.redirect(301, 'https://github.com/menetrendek-info/gtfs-api')
     })
 
     app.get('/stops', async function (req, res) {
