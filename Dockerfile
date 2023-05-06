@@ -13,6 +13,10 @@ RUN apk add --no-cache python3 make g++ curl
 COPY package.json ./
 COPY yarn.lock ./
 
+# Initialize the database
+RUN mkdir data
+RUN touch data/db.sqlite
+
 # Install app dependencies
 RUN yarn install
 

@@ -1,7 +1,7 @@
 import express from 'express';
 const app = express();
 import { readFileSync } from 'fs';
-import { getRoutes, openDb, getTrips, getStops, updateGtfsRealtime } from 'gtfs';
+import { getRoutes, openDb, getTrips, getStops, updateGtfsRealtime, importGtfs } from 'gtfs';
 import { config as dotenvConfig } from "dotenv"
 import cors from 'cors'
 
@@ -26,8 +26,14 @@ const main = async () => {
         "sqlitePath": "./data/db.sqlite"
     };
 
-    await updateGtfsRealtime(config)
-    const db = openDb(config)
+    let db
+    try{
+        await updateGtfsRealtime(config)
+        db = openDb(config)
+    }catch(e){
+        await importGtfs(config)
+        db = openDb(config)
+    }
 
     app.get('/', function (req, res) {
         res.json({ body: req.body, query: req.query, params: req.params });

@@ -1,5 +1,5 @@
-*.sqlite
 src/
 node_modules/
 .env
 *.log
+data/

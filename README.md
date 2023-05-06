@@ -6,6 +6,7 @@
 Az API jelenleg fejlesztés alatt áll, és csak néhány végpont érhető el. Az API még nem stabil, ezért a végpontok később megváltozhatnak. Az API még nincs dokumentálva, de néhány információt a végpontokról lent találsz.
 Az egyetlen elérhető ügynökség a MÁV-START. Az API csak a magyar vasúti rendszer adatait tartalmazza. A magyar buszrendszer adatai később lesznek hozzáadva.
 
+
 ### Mi az a GTFS?
 GTFS a General Transit Feed Specification rövidítése. Ez egy szabványos formátum a tömegközlekedési menetrendekhez és a hozzájuk tartozó földrajzi információkhoz. A Google Térképek és más szolgáltatások használják a tömegközlekedési útvonalak megjelenítéséhez.
 
@@ -15,11 +16,22 @@ Ez az API szolgálja ki a magyar tömegközlekedési rendszer GTFS adatait. A [m
 ### Hogyan használd?
 Az API elérhető a [api.menetrendek.info](http://api.menetrendek.info) címen. Ez egy RESTful API, tehát HTTP kérésekkel érhető el. Az API csak olvasható, tehát csak GET kéréseket lehet használni. Az API JSON adatokat ad vissza.
 
+### Telepítés
+1. Klónozd le a repót: `git clone`
+2. Telepítsd a NodeJS-t: [https://nodejs.org/en/](https://nodejs.org/en/)
+3. Telepítsd az SQLite-ot: [https://www.sqlite.org/download.html](https://www.sqlite.org/download.html)
+4. Telepítsd a Yarn-t: [https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)
+5. Telepítsd a függőségeket: `yarn install`
+6. Készíts egy datamappát a gyökérkönyvtárban: `mkdir data`
+7. A data mappába készíts egy üres SQLite adatbázist db.sqlite néven.
+8. Indítsd el az API-t: `yarn start`
+
 ### Végpontok
 #### /api/stops?query={query}
 Visszaad egy megadott lekérdezésnek megfelelő megállók listáját. A query paraméter nem opcionális. Ha nincs megadva, akkor nem ad vissza megállókat. A query paraméter nem érzékeny a kis- és nagybetűkre. A query paraméter egy megálló neve lehet. Ezt a végpontot az autokomplettáló mezőkhez és a megálló azonosítók lekéréséhez használjuk.
 
 #### /api/routes/:day_of_week/:start_stop_id/:end_stop_id
+Visszaad egy listát az adott két megálló közötti járatokról. A day_of_week paraméter opcionális. Ha nincs megadva, akkor az aktuális napot használja. A start_stop_id és end_stop_id paraméterek kötelezőek. Ezeket a /api/stops végpontból lehet lekérni. A day_of_week paraméter a következő értékek egyike lehet: monday, tuesday, wednesday, thursday, friday, saturday, sunday. Ezt a végpontot a menetrend keresés funkcióhoz használjuk.
 
 ## 🇬🇧 A GTFS API for the Hungarian public transport system
 
@@ -35,6 +47,16 @@ This API provides a simple way to access the GTFS data of the Hungarian public t
 
 ### How to use it?
 The API is available at [api.menetrendek.info](http://api.menetrendek.info). It is a RESTful API, so you can access the data using HTTP requests. The API is read-only, so you can only use GET requests. The API returns JSON data.
+
+### Installation
+1. Clone the repo: `git clone`
+2. Install NodeJS: [https://nodejs.org/en/](https://nodejs.org/en/)
+3. Install SQLite: [https://www.sqlite.org/download.html](https://www.sqlite.org/download.html)
+4. Install Yarn: [https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)
+5. Install the dependencies: `yarn install`
+6. Create a data folder in the root directory: `mkdir data`
+7. Create an empty SQLite database named db.sqlite in the data folder.
+8. Start the API: `yarn start`
 
 ### Endpoints
 #### /api/stops?query={query}
