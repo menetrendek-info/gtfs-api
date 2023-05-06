@@ -9,7 +9,7 @@ const main = async () => {
     dotenvConfig()
 
     app.use(cors({
-        origin: ["https://menetrendek.info", "http://localhost:8081"]
+        origin: ["https://menetrendek.info", /http:\/\/localhost:\d+/]
     }))
 
     const config = {
