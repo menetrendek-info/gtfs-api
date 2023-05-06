@@ -42,7 +42,7 @@ const main = async () => {
     })
 
     app.get('/stops', async function (req, res) {
-        const stops = req.query.query ? db.prepare("SELECT * FROM stops WHERE stop_name LIKE ? LIMIT 50;").all(`%${req.query.query}%`) : []
+        const stops = req.query.query ? db.prepare("SELECT * FROM stops WHERE stop_name LIKE ? LIMIT 50;").all(`${req.query.query}%`) : []
         res.json(stops)
     })
 
