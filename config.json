@@ -1,0 +1,13 @@
+{
+    "agencies": [
+        {
+            "url": "https://www.mavcsoport.hu/gtfs/gtfsMavMenetrend.zip",
+            "headers": {
+                "Authorization": ""
+            },
+            "prefix": "MAV",
+            "name": "MÁV-START Zrt."
+        }
+    ],
+    "sqlitePath": "./db.sqlite"
+}
