@@ -40,16 +40,14 @@ SUBSTR(r.route_id, 1, LENGTH(r.route_id) - (SUBSTR(r.route_id, -1) = '.')) as ro
 SUBSTR(t.trip_id, 1, LENGTH(t.trip_id) - (SUBSTR(t.trip_id, -1) = '.')) as trip_id,
 s1.stop_name AS departure_stop,
 s2.stop_name AS arrival_stop,
-MIN(st1.departure_time) AS start_departure, 
-MAX(st2.arrival_time) AS end_arrival, 
-strftime('%H:%M', st1.departure_time, 'localtime') AS start_departure_local, 
-strftime('%H:%M', st2.arrival_time, 'localtime') AS end_arrival_local, 
-ROUND((6371 * ACOS(COS(RADIANS(s1.stop_lat)) * COS(RADIANS(s2.stop_lat)) * COS(RADIANS(s2.stop_lon) - RADIANS(s1.stop_lon)) + SIN(RADIANS(s1.stop_lat)) * SIN(RADIANS(s2.stop_lat)))), 2) AS distance, 
-CASE
-    WHEN st1.departure_time IS NULL OR st2.arrival_time IS NULL THEN NULL
-    WHEN st1.departure_time > st2.arrival_time THEN NULL
-    ELSE strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time)))
-END AS travel_time`
+strftime('%H:%M', MIN(CASE
+    WHEN datetime(st1.departure_time) < datetime('now', 'localtime', 'start of day') THEN datetime(st1.departure_time, '+1 day')
+    ELSE st1.departure_time
+END)) AS start_departure, 
+strftime('%H:%M', MAX(CASE
+    WHEN datetime(st2.arrival_time) < datetime('now', 'localtime', 'start of day') THEN datetime(st2.arrival_time, '+1 day')
+    ELSE st2.arrival_time
+END)) AS end_arrival`
 
 const trip_route_from = `stops s1 
 JOIN stop_times st1 ON s1.stop_id = st1.stop_id 
