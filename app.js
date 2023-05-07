@@ -96,15 +96,15 @@ const main = async () => {
         ORDER BY 
             start_departure;
     `).all({ start_stop_id: req.params.start_stop_id, end_stop_id: req.params.end_stop_id });
-        try {
-            routes.sort((a, b) => {
+        routes.sort((a, b) => {
+            try {
                 if (!a.start_departure || !b.start_departure) return 0
                 if (a.start_departure.indexOf(':') === -1 || b.start_departure.indexOf(':') === -1) return 0
                 const aTime = a.start_departure.split(':')
                 const bTime = b.start_departure.split(':')
                 return aTime[0] * 60 + aTime[1] - bTime[0] * 60 - bTime[1]
-            })
-        } catch { }
+            } catch { return 0 }
+        })
         res.json(routes)
     })
 
