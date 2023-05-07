@@ -4,6 +4,33 @@ import { getRoutes, openDb, getStops, updateGtfsRealtime, importGtfs } from 'gtf
 import { config as dotenvConfig } from "dotenv"
 import cors from 'cors'
 
+export const getDayName = (d, prev) => {
+    if (typeof d === 'string') {
+        d = new Date(d)
+    }
+    if (prev) {
+        d.setDate(d.getDate() - 1)
+    }
+    switch ((d ? d : new Date()).getDay()) {
+        case 0:
+            return 'sunday'
+        case 1:
+            return 'monday'
+        case 2:
+            return 'tuesday'
+        case 3:
+            return 'wednesday'
+        case 4:
+            return 'thursday'
+        case 5:
+            return 'friday'
+        case 6:
+            return 'saturday'
+        default:
+            return (d ? d : new Date()).getDay()
+    }
+}
+
 const trip_route_select = `t.trip_headsign, 
 r.route_long_name, 
 r.route_short_name,
@@ -15,16 +42,16 @@ s1.stop_name AS departure_stop,
 s2.stop_name AS arrival_stop,
 MIN(st1.departure_time) AS start_departure, 
 MAX(st2.arrival_time) AS end_arrival, 
-strftime('%H:%M', st1.departure_time, 'localtime') AS start_departure, 
-strftime('%H:%M', st2.arrival_time, 'localtime') AS end_arrival, 
+COALESCE(strftime('%H:%M', st1.departure_time, 'localtime'), 'N/A') AS start_departure,
+COALESCE(strftime('%H:%M', st2.arrival_time, 'localtime'), 'N/A') AS end_arrival,
 ROUND((6371 * ACOS(COS(RADIANS(s1.stop_lat)) * COS(RADIANS(s2.stop_lat)) * COS(RADIANS(s2.stop_lon) - RADIANS(s1.stop_lon)) + SIN(RADIANS(s1.stop_lat)) * SIN(RADIANS(s2.stop_lat)))), 2) AS distance, 
-strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time))) AS travel_time `
+strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time))) AS travel_time`
 
 const trip_route_from = `stops s1 
 JOIN stop_times st1 ON s1.stop_id = st1.stop_id 
 JOIN trips t ON st1.trip_id = t.trip_id 
 JOIN routes r ON t.route_id = r.route_id 
-JOIN stop_times st2 ON t.trip_id = st2.trip_id AND st1.stop_sequence < st2.stop_sequence
+JOIN stop_times st2 ON t.trip_id = st2.trip_id 
 JOIN stops s2 ON st2.stop_id = s2.stop_id 
 JOIN calendar c ON t.service_id = c.service_id`
 
@@ -80,7 +107,7 @@ const main = async () => {
     })
 
     // endpoint to get routes between two stops from gts, display departure and arrival times from the start and end stops
-    app.get('/trips/:day/:start_stop_id/:end_stop_id', async function (req, res) {
+    app.get('/trips/:date/:start_stop_id/:end_stop_id', async function (req, res) {
         const routes = db.prepare(`
         SELECT 
             ${trip_route_select}
@@ -90,7 +117,7 @@ const main = async () => {
             s1.stop_id = $start_stop_id 
             AND s2.stop_id = $end_stop_id 
             AND st1.stop_sequence < st2.stop_sequence 
-            AND c.${req.params.day} = 1 
+            AND (c.${getDayName(req.params.date, false)} = 1 OR (c.${getDayName(req.params.date, false)} = 0 AND c.${getDayName(req.params.date, true)} = 1))
         GROUP BY 
             r.route_id
         ORDER BY 
