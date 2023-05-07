@@ -125,6 +125,11 @@ const main = async () => {
         res.json(trip)
     })
 
+    app.get('/agencies', async function (req, res) {
+        const agencies = db.prepare("SELECT * FROM agency;").all()
+        res.json(agencies)
+    })
+
     var server = app.listen(8081, function () {
         var port = server.address().port
         console.log("Listening at http://localhost:%s", process.env.PORT || port)

@@ -38,6 +38,9 @@ Visszaad egy listát az adott két megálló közötti járatokról. A start_sto
 #### /api/trips/:trip_id
 Lekér egy adott "trip"-et (utat). A trip_id paraméter kötelező. A végpont egy azonosító alapján újra előhívhatja egy korábban megkeresett út adatait. Ezt a végpontot a rendereléshez használjuk a megosztásnál.
 
+#### /agencies
+Visszaadja a rendelkezésre álló ügynökségek listáját. Ezt a végpontot a főoldalon használjuk, a lefedettség szemléltetéséhez.
+
 ## 🇬🇧 A GTFS API for the Hungarian public transport system
 
 ### The state of the API
@@ -75,3 +78,6 @@ Get routes between two stops. The start_stop_id and end_stop_id parameters are r
 
 #### /api/trips/:trip_id
 Get a specific trip. The trip_id parameter is required. This endpoint can be used to get the data of a previously searched route. This endpoint is used for rendering the route when sharing it.
+
+#### /agencies
+Returns a list of the available agencies. This endpoint is used on the homepage to show the coverage.
