@@ -24,7 +24,7 @@ const trip_route_from = `stops s1
 JOIN stop_times st1 ON s1.stop_id = st1.stop_id 
 JOIN trips t ON st1.trip_id = t.trip_id 
 JOIN routes r ON t.route_id = r.route_id 
-JOIN stop_times st2 ON t.trip_id = st2.trip_id 
+JOIN stop_times st2 ON t.trip_id = st2.trip_id AND st1.stop_sequence < st2.stop_sequence
 JOIN stops s2 ON st2.stop_id = s2.stop_id 
 JOIN calendar c ON t.service_id = c.service_id`
 
