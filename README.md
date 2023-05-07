@@ -4,8 +4,7 @@
 
 ### Az API állapota
 Az API jelenleg fejlesztés alatt áll, és csak néhány végpont érhető el. Az API még nem stabil, ezért a végpontok később megváltozhatnak. Az API még nincs dokumentálva, de néhány információt a végpontokról lent találsz.
-Az egyetlen elérhető ügynökség a MÁV-START. Az API csak a magyar vasúti rendszer adatait tartalmazza. A magyar buszrendszer adatai később lesznek hozzáadva.
-
+Az egyetlen elérhető ügynökség a MÁV-START. Az API csak a magyar vasúti rendszer adatait tartalmazza. A magyar buszrendszer adatai később lesznek hozzáadva. Az API ChatGPT segítségével készített SQL queryken keresztül kéri le az adatokat. A ChatGPT egy GPT-3 alapú chatbot, ami képes SQL queryket generálni természetes nyelvű leírások alapján.
 
 ### Mi az a GTFS?
 GTFS a General Transit Feed Specification rövidítése. Ez egy szabványos formátum a tömegközlekedési menetrendekhez és a hozzájuk tartozó földrajzi információkhoz. A Google Térképek és más szolgáltatások használják a tömegközlekedési útvonalak megjelenítéséhez.
@@ -43,7 +42,7 @@ Lekér egy adott "trip"-et (utat). A trip_id paraméter kötelező. A végpont e
 
 ### The state of the API
 Currently the API is under development and only a few endpoints are available. The API is not stable yet, so the endpoints may change in the future. The API is not documented yet, but you can find some information about the endpoints below.
-The only available agency is MÁV-START. The API only contains the data of the Hungarian railway system. The data of the Hungarian bus system will be added later.
+The only available agency is MÁV-START. The API only contains the data of the Hungarian railway system. The data of the Hungarian bus system will be added later. The API requests the data through SQL queries made by ChatGPT. ChatGPT is a GPT-3 based chatbot, which is able to generate SQL queries based on natural language descriptions.
 
 ### What is GTFS?
 GTFS stands for General Transit Feed Specification. It is a standard format for public transportation schedules and associated geographic information. It is used by Google Maps and other services to provide public transportation directions.
