@@ -96,6 +96,11 @@ const main = async () => {
         ORDER BY 
             start_departure;
     `).all({ start_stop_id: req.params.start_stop_id, end_stop_id: req.params.end_stop_id });
+        routes.sort((a, b) => {
+            const aTime = a.start_departure.split(':')
+            const bTime = b.start_departure.split(':')
+            return aTime[0] * 60 + aTime[1] - bTime[0] * 60 - bTime[1]
+        })
         res.json(routes)
     })
 
@@ -120,7 +125,7 @@ const main = async () => {
         GROUP BY
             t.trip_id
         ORDER BY
-            start_departure;
+            strftime('%s', strftime('%H:%M', MIN(st1.departure_time), 'localtime'));
     `).all({ trip_id: req.params.trip_id })[0];
         res.json(trip)
     })
