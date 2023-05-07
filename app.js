@@ -47,7 +47,9 @@ END)) AS start_departure,
 strftime('%H:%M', MAX(CASE
     WHEN datetime(st2.arrival_time) < datetime('now', 'localtime', 'start of day') THEN datetime(st2.arrival_time, '+1 day')
     ELSE st2.arrival_time
-END)) AS end_arrival`
+END)) AS end_arrival,
+ROUND((6371 * ACOS(COS(RADIANS(s1.stop_lat)) * COS(RADIANS(s2.stop_lat)) * COS(RADIANS(s2.stop_lon) - RADIANS(s1.stop_lon)) + SIN(RADIANS(s1.stop_lat)) * SIN(RADIANS(s2.stop_lat)))), 2) AS distance, 
+strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time))) AS travel_time`
 
 const trip_route_from = `stops s1 
 JOIN stop_times st1 ON s1.stop_id = st1.stop_id 
