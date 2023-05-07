@@ -1,9 +1,32 @@
 import express from 'express';
 const app = express();
-import { readFileSync } from 'fs';
-import { getRoutes, openDb, getTrips, getStops, updateGtfsRealtime, importGtfs } from 'gtfs';
+import { getRoutes, openDb, getStops, updateGtfsRealtime, importGtfs } from 'gtfs';
 import { config as dotenvConfig } from "dotenv"
 import cors from 'cors'
+
+const trip_route_select = `t.trip_headsign, 
+r.route_long_name, 
+r.route_short_name,
+r.route_color,
+r.route_text_color,
+SUBSTR(r.route_id, 1, LENGTH(r.route_id) - (SUBSTR(r.route_id, -1) = '.')) as route_id,
+SUBSTR(t.trip_id, 1, LENGTH(t.trip_id) - (SUBSTR(t.trip_id, -1) = '.')) as trip_id,
+s1.stop_name AS departure_stop,
+s2.stop_name AS arrival_stop,
+MIN(st1.departure_time) AS start_departure, 
+MAX(st2.arrival_time) AS end_arrival, 
+strftime('%H:%M', st1.departure_time, 'localtime') AS start_departure, 
+strftime('%H:%M', st2.arrival_time, 'localtime') AS end_arrival, 
+ROUND((6371 * ACOS(COS(RADIANS(s1.stop_lat)) * COS(RADIANS(s2.stop_lat)) * COS(RADIANS(s2.stop_lon) - RADIANS(s1.stop_lon)) + SIN(RADIANS(s1.stop_lat)) * SIN(RADIANS(s2.stop_lat)))), 2) AS distance, 
+strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time))) AS travel_time `
+
+const trip_route_from = `stops s1 
+JOIN stop_times st1 ON s1.stop_id = st1.stop_id 
+JOIN trips t ON st1.trip_id = t.trip_id 
+JOIN routes r ON t.route_id = r.route_id 
+JOIN stop_times st2 ON t.trip_id = st2.trip_id 
+JOIN stops s2 ON st2.stop_id = s2.stop_id 
+JOIN calendar c ON t.service_id = c.service_id`
 
 const main = async () => {
     dotenvConfig()
@@ -27,10 +50,10 @@ const main = async () => {
     };
 
     let db
-    try{
+    try {
         await updateGtfsRealtime(config)
         db = openDb(config)
-    }catch(e){
+    } catch (e) {
         await importGtfs(config)
         await updateGtfsRealtime(config)
         db = openDb(config)
@@ -57,32 +80,12 @@ const main = async () => {
     })
 
     // endpoint to get routes between two stops from gts, display departure and arrival times from the start and end stops
-    app.get('/routes/:day/:start_stop_id/:end_stop_id', async function (req, res) {
+    app.get('/trips/:day/:start_stop_id/:end_stop_id', async function (req, res) {
         const routes = db.prepare(`
         SELECT 
-            t.trip_headsign, 
-            r.route_long_name, 
-            r.route_short_name,
-            r.route_color,
-            r.route_text_color,
-            r.route_id, 
-            t.trip_id, 
-            s1.stop_name AS departure_stop,
-            s2.stop_name AS arrival_stop,
-            MIN(st1.departure_time) AS start_departure, 
-            MAX(st2.arrival_time) AS end_arrival, 
-            strftime('%H:%M', st1.departure_time, 'localtime') AS start_departure, 
-            strftime('%H:%M', st2.arrival_time, 'localtime') AS end_arrival, 
-            ROUND((6371 * ACOS(COS(RADIANS(s1.stop_lat)) * COS(RADIANS(s2.stop_lat)) * COS(RADIANS(s2.stop_lon) - RADIANS(s1.stop_lon)) + SIN(RADIANS(s1.stop_lat)) * SIN(RADIANS(s2.stop_lat)))), 2) AS distance, 
-            strftime('%H:%M', time(MAX(st2.arrival_time), '-'||MIN(st1.departure_time))) AS travel_time 
+            ${trip_route_select}
         FROM 
-            stops s1 
-            JOIN stop_times st1 ON s1.stop_id = st1.stop_id 
-            JOIN trips t ON st1.trip_id = t.trip_id 
-            JOIN routes r ON t.route_id = r.route_id 
-            JOIN stop_times st2 ON t.trip_id = st2.trip_id 
-            JOIN stops s2 ON st2.stop_id = s2.stop_id 
-            JOIN calendar c ON t.service_id = c.service_id 
+            ${trip_route_from}
         WHERE 
             s1.stop_id = $start_stop_id 
             AND s2.stop_id = $end_stop_id 
@@ -106,19 +109,25 @@ const main = async () => {
         res.json(routes)
     })
 
-    app.get('/trips', async function (req, res) {
-        const trips = getTrips(
-            {}, // No query filters
-            ['trip_id', 'route_id', 'trip_headsign'], // Only return these fields
-            [['route_id', 'ASC']], // Sort by this field and direction
-            { db: db } // Options for the query. Can specify which database to use if more than one are open
-        );
-        res.json(trips)
+    app.get('/trips/:trip_id', async function (req, res) {
+        const trip = db.prepare(`
+        SELECT
+            ${trip_route_select}
+        FROM
+            ${trip_route_from}
+        WHERE
+            SUBSTR(t.trip_id, 1, LENGTH(t.trip_id) - (SUBSTR(t.trip_id, -1) = '.')) = $trip_id
+        GROUP BY
+            t.trip_id
+        ORDER BY
+            start_departure;
+    `).all({ trip_id: req.params.trip_id })[0];
+        res.json(trip)
     })
 
     var server = app.listen(8081, function () {
         var port = server.address().port
-        console.log("Listening at http://localhost:%s", port)
+        console.log("Listening at http://localhost:%s", process.env.PORT || port)
     })
 }
 main()

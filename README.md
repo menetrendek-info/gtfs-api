@@ -30,8 +30,14 @@ Az API elérhető a [api.menetrendek.info](http://api.menetrendek.info) címen. 
 #### /api/stops?query={query}
 Visszaad egy megadott lekérdezésnek megfelelő megállók listáját. A query paraméter nem opcionális. Ha nincs megadva, akkor nem ad vissza megállókat. A query paraméter nem érzékeny a kis- és nagybetűkre. A query paraméter egy megálló neve lehet. Ezt a végpontot az autokomplettáló mezőkhez és a megálló azonosítók lekéréséhez használjuk.
 
-#### /api/routes/:day_of_week/:start_stop_id/:end_stop_id
+#### /api/stops/:stop_id
+Visszaad egy megállót. A stop_id paraméter kötelező. A végpont egy azonosító alapján újra előhívhatja egy korábban megkeresett megálló adatait. Ezt a végpontot a megállók adatainak lekéréséhez használjuk.
+
+#### /api/trips/:day_of_week/:start_stop_id/:end_stop_id
 Visszaad egy listát az adott két megálló közötti járatokról. A start_stop_id és end_stop_id paraméterek kötelezőek. Ezeket a /api/stops végpontból lehet lekérni. A day_of_week paraméter a következő értékek egyike lehet: monday, tuesday, wednesday, thursday, friday, saturday, sunday. Ezt a végpontot a menetrend keresés funkcióhoz használjuk.
+
+#### /api/trips/:trip_id
+Lekér egy adott "trip"-et (utat). A trip_id paraméter kötelező. A végpont egy azonosító alapján újra előhívhatja egy korábban megkeresett út adatait. Ezt a végpontot a rendereléshez használjuk a megosztásnál.
 
 ## 🇬🇧 A GTFS API for the Hungarian public transport system
 
@@ -62,6 +68,11 @@ The API is available at [api.menetrendek.info](http://api.menetrendek.info). It 
 #### /api/stops?query={query}
 Returns a list of stops that match the query. The query parameter is not optional. If it is not provided, no stops are returned. The query parameter is case-insensitive. The query parameter can be a stop name. This endpoint is used for autocomplete boxes and for getting the stop IDs to use them in other endpoints.
 
-#### /api/routes/:day_of_week/:start_stop_id/:end_stop_id
+#### /api/stops/:stop_id
+Returns a stop. The stop_id parameter is required. This endpoint can be used to get the data of a previously searched stop. This endpoint is used for rendering the stop when sharing it.
+
+#### /api/trips/:day_of_week/:start_stop_id/:end_stop_id
 Get routes between two stops. The start_stop_id and end_stop_id parameters are required. They can be obtained from the /api/stops endpoint. The day_of_week parameter can be one of the following values: monday, tuesday, wednesday, thursday, friday, saturday, sunday. This endpoint is used for the route search feature.
-Visszaad egy listát az adott két megálló közötti járatokról. A day_of_week paraméter opcionális. Ha nincs megadva, akkor az aktuális napot használja. A start_stop_id és end_stop_id paraméterek kötelezőek. Ezeket a /api/stops végpontból lehet lekérni. A day_of_week paraméter az alábbi értékek egyike lehet: monday, tuesday, wednesday, thursday, friday, saturday, sunday. Ezt a végpontot a járatkereső funkcióhoz használjuk.
+
+#### /api/trips/:trip_id
+Get a specific trip. The trip_id parameter is required. This endpoint can be used to get the data of a previously searched route. This endpoint is used for rendering the route when sharing it.
