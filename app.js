@@ -126,7 +126,13 @@ const main = async () => {
             r.route_id
         ORDER BY 
             start_departure;
-    `).all({ start_stop_id: req.params.start_stop_id, end_stop_id: req.params.end_stop_id }).filter(route => route.start_departure && route.end_arrival);
+    `).all({ start_stop_id: req.params.start_stop_id, end_stop_id: req.params.end_stop_id }).filter((route, index, self) => {
+            //filter out duplicate routes, where the start_departure and end_arrival is the same
+            if (!route.start_departure || !route.end_arrival) { return false }
+            return index === self.findIndex((t) => {
+                return t.start_departure === route.start_departure && t.end_arrival === route.end_arrival
+            })
+        });
         routes.sort((a, b) => {
             try {
                 if (!a.start_departure || !b.start_departure) return 0
